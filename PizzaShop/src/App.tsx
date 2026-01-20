@@ -1,13 +1,13 @@
 import Home from "./Home"
 // import { useQuery } from "@tanstack/react-query"
-// import AllRecipes from "./Options/AllRecipes"
-// import SingleRecipe from "./Options/SingleRecipe"
-// import SearchRecipe from "./Options/SearchRecipe"
-// import LimitAndSkipRecipes from "./Options/LimitAndSkipRecipes"
-// import SortRecipes from "./Options/SortRecipes"
-// import AllRecipeTags from "./Options/AllRecipeTags"
-// import RecipesByTags from "./Options/RecipesByTags"
-// import RecipesByMeals from "./Options/RecipesByMeals"
+// import AllRecipes from "./options/AllRecipes"
+// import SingleRecipe from "./options/SingleRecipe"
+// import SearchRecipe from "./options/SearchRecipe"
+// import LimitAndSkipRecipes from "./options/LimitAndSkipRecipes"
+// import SortRecipes from "./options/SortRecipes"
+// import AllRecipeTags from "./options/AllRecipeTags"
+// import RecipesByTags from "./options/RecipesByTags"
+// import RecipesByMeals from "./options/RecipesByMeals"
 
 function App() {
 

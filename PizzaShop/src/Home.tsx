@@ -1,5 +1,10 @@
+import { Overlay } from "./Overlay";
+import { useState } from "react";
 
 function Home () {
+
+    const [isOverlayOpen, setOverlayOpen] =  useState(false);
+
     return (
         <>
             <div className="w-full h-full bg-amber-100 ">
@@ -10,7 +15,7 @@ function Home () {
                 <hr className='border-2 border-black mx-16'/>
                 <div className='grid grid-cols-4 gap-1 p-10'>
                     <div className='w-auto h-auto rounded-3xl text-2xl p-5 m-5 shadow-lg shadow-gray-700 hover:scale-105 duration-300'>
-                        <img src='https://cdn.dummyjson.com/recipe-images/2.webp' className='h-50 rounded-3xl w-full'></img>
+                        <img src='https://cdn.dummyjson.com/recipe-images/2.webp' className='h-50 rounded-3xl w-full cursor-pointer' onClick={() => setOverlayOpen(true)} ></img>
                         <h1 className='font-bold text-center p-3 '>Tasty Pizza</h1>
 
                         <hr className='border-2 border-black mx-1'/>
@@ -29,6 +34,19 @@ function Home () {
                         </div>
                     </div>
                 </div>
+
+                <Overlay isOpen={isOverlayOpen} onClose={() => setOverlayOpen(!isOverlayOpen)}>
+                    <div className="w-full text-center space-y-3 pt-2">
+                        <ul className="font-bold text-3xl">Instructions</ul>
+                        <ul className="space-y-1 text-xl font-medium">
+                            <li>Instructions</li>
+                            <li>Instructions</li>
+                            <li>Instructions</li>
+                            <li>Instructions</li>
+                            <li>Instructions</li>
+                        </ul>
+                    </div>
+                </Overlay>
             </div>
         </>
     )
