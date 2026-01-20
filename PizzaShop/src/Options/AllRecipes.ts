@@ -8,11 +8,8 @@ function AllRecipes() {
 }
 
 const getAllRecipes = async () => {
-  const response = await fetch('https://dummyjson.com/recipes')
-                            .then(res => res.json())
-                            .then(console.log);
-
-  return await response;
+  const response = await fetch('https://dummyjson.com/recipes');
+  return response.json();
 }
 
 export default AllRecipes;

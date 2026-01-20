@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 
 function SingleRecipe () {
     return queryOptions({
-        queryKey: ['recipe'],
+        queryKey: ['recipes'],
         queryFn: getSingleRecipe
     })
 }

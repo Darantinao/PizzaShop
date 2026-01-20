@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 
 function AllRecipeTags() {
     return queryOptions({
-        queryKey: ['recipe'],
+        queryKey: ['recipes'],
         queryFn: getAllRecipeTags
     })
 }
