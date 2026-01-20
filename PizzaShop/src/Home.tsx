@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import Card from "./Card";
-import AllRecipes from "./Recipes.ts";
-import FilterBar from "./FilterBar.tsx";
+import Card from "./components/Card.tsx";
+import AllRecipes from "./ts/Recipes.ts";
+import FilterBar from "./components/FilterBar.tsx";
 import { useState } from "react";
 
 interface Recipe {
@@ -18,7 +18,7 @@ function Home () {
     const { data, isLoading, error } = useQuery(AllRecipes())
     const [search, setSearch] = useState<string>("")
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <div className='justify-center items-center flex h-screen text-6xl font-bold'>Loading...</div>;
     if (error) return <div>Error loading recipes</div>;
 
     return (

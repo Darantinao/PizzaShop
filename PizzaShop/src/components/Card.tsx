@@ -33,8 +33,12 @@ function Card({ recipe }: CardProps) {
                 </div>
 
                 <div className='grid grid-cols-2 gap-4 pl-3 pr-3 mt-auto'>
-                    <button className="border-2 w-auto rounded-3xl bg-yellow-400 font-medium p-1 cursor-pointer">Edit</button>
-                    <button className="border-2 w-auto rounded-3xl bg-red-400 font-medium p-1 cursor-pointer">Delete</button>
+                    <button 
+                    className="border-2 w-auto rounded-3xl bg-yellow-400 font-medium p-1 cursor-pointer"
+                    >Edit</button>
+                    <button 
+                    className="border-2 w-auto rounded-3xl bg-red-400 font-medium p-1 cursor-pointer"
+                    >Delete</button>
                 </div>
             </div>
             
