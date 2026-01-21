@@ -1,4 +1,7 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteRecipe, updateRecipe } from "../ts/Recipes";
 import { Overlay } from "./Overlay";
 
 interface Recipe {
@@ -14,15 +17,93 @@ interface CardProps {
   recipe: Recipe;
 }
 
+type RecipesResponse = { recipes: Recipe[] } | undefined;
+
 function Card({ recipe }: CardProps) {
 
     const [isOverlayOpen, setOverlayOpen] =  useState(false);
+    const [isEditOpen, setEditOpen] = useState(false);
+    const [isDeleteOpen, setDeleteOpen] = useState(false);
+    const [formState, setFormState] = useState({
+        name: recipe.name,
+        image: recipe.image,
+        tags: recipe.tags.join(", "),
+        instructions: recipe.instructions.join("\n"),
+    });
+
+    const queryClient = useQueryClient();
+
+    const updateMutation = useMutation({
+        mutationFn: updateRecipe,
+        onSuccess: (updatedRecipe) => {
+            queryClient.setQueryData<RecipesResponse>(["recipes"], (oldData) => {
+                if (!oldData?.recipes) return oldData;
+
+                return {
+                    ...oldData,
+                    recipes: oldData.recipes.map((r) =>
+                        r.id === recipe.id ? { ...r, ...updatedRecipe } : r
+                    ),
+                };
+            });
+
+            setEditOpen(false);
+        },
+    });
+
+    const openEdit = () => {
+        setFormState({
+            name: recipe.name,
+            image: recipe.image,
+            tags: recipe.tags.join(", "),
+            instructions: recipe.instructions.join("\n"),
+        });
+        setEditOpen(true);
+    };
+
+    const handleEditSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const preparedTags = formState.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean);
+
+        const preparedInstructions = formState.instructions
+            .split("\n")
+            .map((step) => step.trim())
+            .filter(Boolean);
+
+        updateMutation.mutate({
+            id: recipe.id,
+            name: formState.name,
+            image: formState.image,
+            tags: preparedTags,
+            instructions: preparedInstructions,
+        });
+    };
+
+    const deleteMutation = useMutation({
+        mutationFn: () => deleteRecipe(recipe.id),
+        onSuccess: () => {
+            queryClient.setQueryData<RecipesResponse>(["recipes"], (oldData) => {
+                if (!oldData?.recipes) return oldData;
+
+                return {
+                    ...oldData,
+                    recipes: oldData.recipes.filter((r) => r.id !== recipe.id),
+                };
+            });
+
+            setDeleteOpen(false);
+        },
+    });
     
     return (
         <>
-            <div className='flex flex-col h-full w-auto rounded-3xl text-2xl p-5 m-4 shadow-lg shadow-gray-700 hover:scale-105 duration-300'>
+            <div className='flex flex-col h-full w-auto rounded-3xl p-5 m-4 shadow-lg shadow-gray-700 hover:scale-105 duration-300'>
                 <img src={recipe.image} className='h-50 rounded-3xl w-full cursor-pointer' onClick={() => setOverlayOpen(true)} ></img>
-                <h1 className='font-bold text-center p-3 align-middle h-24'>{recipe.name}</h1>
+                <h1 className='font-bold text-center p-3 h-24 text-xl'>{recipe.name}</h1>
 
                 <hr className='border-2 border-black mx-1'/>
 
@@ -32,12 +113,14 @@ function Card({ recipe }: CardProps) {
                     ))}
                 </div>
 
-                <div className='grid grid-cols-2 gap-4 pl-3 pr-3 mt-auto'>
+                <div className='grid grid-cols-2 gap-4 pl-3 pr-3 mt-auto text-lg'>
                     <button 
-                    className="border-2 w-auto rounded-3xl bg-yellow-400 font-medium p-1 cursor-pointer"
+                    className="border-2 w-auto rounded-2xl bg-yellow-400 font-medium p-2 cursor-pointer hover:bg-yellow-500 duration-300"
+                    onClick={openEdit}
                     >Edit</button>
                     <button 
-                    className="border-2 w-auto rounded-3xl bg-red-400 font-medium p-1 cursor-pointer"
+                    className="border-2 w-auto rounded-2xl bg-red-400 font-medium p-2 cursor-pointer hover:bg-red-500 duration-300"
+                    onClick={() => setDeleteOpen(true)}
                     >Delete</button>
                 </div>
             </div>
@@ -52,9 +135,98 @@ function Card({ recipe }: CardProps) {
                     </ol>
                 </div>
             </Overlay>
+
+            <Overlay isOpen={isEditOpen} onClose={() => setEditOpen(false)}>
+                <form onSubmit={handleEditSubmit} className="space-y-4">
+                    <h2 className="text-2xl font-bold">Edit Pizza</h2>
+
+                    <label className="block space-y-1">
+                        <span className="text-sm font-semibold">Name</span>
+                        <input
+                            type="text"
+                            value={formState.name}
+                            onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                            className="w-full rounded border border-gray-300 px-3 py-2"
+                            required
+                        />
+                    </label>
+
+                    <label className="block space-y-1">
+                        <span className="text-sm font-semibold">Image URL</span>
+                        <input
+                            type="text"
+                            value={formState.image}
+                            onChange={(e) => setFormState({ ...formState, image: e.target.value })}
+                            className="w-full rounded border border-gray-300 px-3 py-2"
+                            required
+                        />
+                    </label>
+
+                    <label className="block space-y-1">
+                        <span className="text-sm font-semibold">Tags (comma separated)</span>
+                        <input
+                            type="text"
+                            value={formState.tags}
+                            onChange={(e) => setFormState({ ...formState, tags: e.target.value })}
+                            className="w-full rounded border border-gray-300 px-3 py-2"
+                        />
+                    </label>
+
+                    <label className="block space-y-1">
+                        <span className="text-sm font-semibold">Instructions (one per line)</span>
+                        <textarea
+                            value={formState.instructions}
+                            onChange={(e) => setFormState({ ...formState, instructions: e.target.value })}
+                            className="w-full rounded border border-gray-300 px-3 py-2"
+                            rows={6}
+                        />
+                    </label>
+
+                    <div className="flex justify-end space-x-3">
+                        <button
+                            type="button"
+                            className="rounded border px-4 py-2"
+                            onClick={() => setEditOpen(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="rounded bg-green-500 px-4 py-2 font-semibold text-white hover:bg-green-600 duration-200"
+                            disabled={updateMutation.isPending}
+                        >
+                            {updateMutation.isPending ? "Saving..." : "Save"}
+                        </button>
+                    </div>
+                </form>
+            </Overlay>
+
+            <Overlay isOpen={isDeleteOpen} onClose={() => setDeleteOpen(false)}>
+                <div className="space-y-4">
+                    <h2 className="text-2xl font-bold">Delete this pizza?</h2>
+                    <p className="text-gray-700">This removes the recipe from the list.</p>
+
+                    <div className="flex justify-end space-x-3">
+                        <button
+                            type="button"
+                            className="rounded border px-4 py-2"
+                            onClick={() => setDeleteOpen(false)}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className="rounded bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600 duration-200"
+                            onClick={() => deleteMutation.mutate()}
+                            disabled={deleteMutation.isPending}
+                        >
+                            {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                        </button>
+                    </div>
+                </div>
+            </Overlay>
         </>
     )
 }
 
 export default Card;
-

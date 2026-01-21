@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Card from "./components/Card.tsx";
 import AllRecipes from "./ts/Recipes.ts";
-import FilterBar from "./components/FilterBar.tsx";
+import FilterBar from "./components/Header.tsx";
 import { useState } from "react";
 
 interface Recipe {
@@ -28,7 +28,7 @@ function Home () {
 
                 <hr className='border-2 border-black mx-16'/>
 
-                <div className='grid grid-cols-4 gap-y-10 p-10'>
+                <div className='grid grid-cols-5 gap-y-10 p-10'>
                     {data?.recipes?.filter((recipe: Recipe) => 
                         recipe.name.toLowerCase().includes(search.toLowerCase())
                     ).map((recipe: Recipe) => (
