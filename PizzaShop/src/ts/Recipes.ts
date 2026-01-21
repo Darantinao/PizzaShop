@@ -40,4 +40,21 @@ export async function deleteRecipe(id: string | number) {
   return res.json()
 }
 
+type CreateRecipeInput = {
+  name: string
+  image: string
+  tags: string[]
+  instructions: string[]
+}
+
+export async function createRecipe(recipe: CreateRecipeInput) {
+  const res = await fetch("https://dummyjson.com/recipes/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(recipe),
+  })
+
+  return res.json()
+}
+
 export default AllRecipes;
